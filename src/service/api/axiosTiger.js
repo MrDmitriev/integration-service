@@ -9,12 +9,12 @@ const axiosTiger = axios.create({
 });
 
 const onSuccess = (response) => {
-	console.log('Partners API request was successfull');
+	console.log('Tigers API request was successfull');
 	return response;
 };
 
 const onError = (err) => {
-	console.error(`An error occured, while using Partners API: `);
+	console.error(`An error occured, while using Tigers API: `);
 	return false;
 }
 
