@@ -1,9 +1,7 @@
 'use strict';
 const {Router} = require('express');
-
-const {convertBodyByTemplate, getDateByISO8601} = require('../../utils/utils');
+const {convertBodyByTemplate, getDateByISO8601} = require('../../utils/conversions');
 const {partnerToTigerConversionTemplate} = require('../../conversionMaps/conversionToTigerTemplate');
-const {partnerRequest} = require('../../mock');
 const axiosTiger = require('../../service/api/axiosTiger');
 
 const ordersRouter = new Router();
