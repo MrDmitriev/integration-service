@@ -14,7 +14,7 @@ const onSuccess = (response) => {
 };
 
 const onError = (err) => {
-	// console.error(`An error occured, while using Partners API: `, err);
+	console.error(`An error occured, while using Partners API: `);
 	return false;
 }
 

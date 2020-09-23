@@ -31,7 +31,7 @@ const checkTemplateValue = (templateValue, newObjectValue) => {
 
 const updateObjValues = (object, templateValue) => {
 	if (!!templateValue.name) {
-		const newObjectValue = getObjectValueByPropName(object, templateValue.name) || '';
+		const newObjectValue = getObjectValueByPropName(object, templateValue.name) || '0';
 		return checkTemplateValue(templateValue, newObjectValue);
 	}
 
