@@ -5,6 +5,7 @@ const app = express();
 const ordersRouter = require('./routes/orders');
 const PORT = process.env.PORT || 8080;
 
+app.use(express.urlencoded({extended: true}));
 app.use('/api/orders', ordersRouter);
 
 app.get('/', (req, res) => {

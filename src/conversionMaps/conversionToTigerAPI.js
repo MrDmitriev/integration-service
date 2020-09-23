@@ -1,9 +1,9 @@
 // "tigerKey": "partnerKey" 
-const partnerConversionMap = {
+const partnerToTigerConversionTemplate = {
 	"OrderID": "id",
-	"InvoiceSendLater": true,
-	"Issued": true,
-	"OrderType": true,
+	"InvoiceSendLater": '',
+	"Issued": '',
+	"OrderType": '',
 	"Shipping": {
 		"CarrierID": "carrierKey",
 		"DeliveryAddress": {
@@ -11,7 +11,7 @@ const partnerConversionMap = {
 			"AddressLine2": "addressLine2", 
 			"City": "city", 
 			"Company": "company", 
-			"CountryCode": true,
+			"CountryCode": '',
 			"Email": "email",
 			"PersonName": "fullName",
 			"Phone": "phone",
@@ -38,6 +38,6 @@ const alfa = {
 };
 
 module.exports = {
-	partnerConversionMap,
+	partnerToTigerConversionTemplate,
 	alfa
 }
