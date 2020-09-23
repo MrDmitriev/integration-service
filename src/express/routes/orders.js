@@ -9,6 +9,7 @@ const ordersRouter = new Router();
 
 ordersRouter.post('/', async (req, res) => {
 	// validate body
+	// validate auth token from partner API
 	// save it to DB with/without correct flag
 	const convertedbody = convertBodyByTemplate(req.body, partnerToTigerConversionTemplate);
 	const body = {
