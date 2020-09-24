@@ -4,51 +4,83 @@ const { convertBodyByTemplate, getDateByISO8601 } = require('../../utils/convers
 const { partnerToTigerConversionTemplate } = require('../../conversionMaps/conversionToTigerTemplate');
 const axiosTiger = require('../../service/api/axiosTiger');
 const axiosPartner = require('../../service/api/axiosPartner');
-const partnerOrderSchema = require('../../schemas/partnerOrderSchema');
+const partnerOrderSchema = require('../../schemas/joi/partnerOrderSchema');
 const partnerOrderValidationMW = require('../../middleware/validation/partnerOrderValidationMW');
+const partnerAuthMW = require('../../middleware/auth/partnerAuthMW');
+const Order = require('../../schemas/mongodb/Order');
+const {OrderStates} = require('../../constants/constants');
 
 const ordersRouter = new Router();
 
-ordersRouter.post('/', partnerOrderValidationMW(partnerOrderSchema), async (req, res) => {
-	// validate body
+const checkOrderStatus = async (orderId) => {
+	try {
+		const response = await axiosTiger.get(`/orders/${orderId}/state`);
+		const status = response.data['State'];
+		console.log('response', response.data);
+		if (status !== 'Finished') {
+			return setTimeout(() => checkOrderStatus(orderId), 5000);
+		} else {
+			console.log(`Finished!!!!`);
+			const body = { "state": status };
+			const response = await axiosPartner.patch(`/orders/${orderId}`, body);
+			console.log(`Finished, response`, response.status);
+		}
+	} catch (err) {
+		console.log('checkorderStatus Error', err);
+	}
+}
+// validate partners credentials
+// if validation true => next to body validation
+// if validation false => 403 forbidden
+
+// validate partnersOrder body
+// convert partners body to tigers body
+// if validation true => create new tigers order
+// if validation false => save order to data base
+// res send status ok + empty body
+
+// --- create new tiger order
+// save body to DB
+// post new order
+// start checking status
+// when status finished => patch partner status
+
+const saveTigerOrder = async (body) => {
+	const order = new Order(body);
+	await order.save();
+	console.log('order saved');
+}
+
+const createTigerOrder = async (body) => {
+	const orderId = body["OrderID"];
+	try {
+		await saveTigerOrder(body);
+		await axiosTiger.post('/orders', body);
+		checkOrderStatus(orderId);
+	} catch (err) {
+		console.log('something went wrong', err.message);
+	}
+}
+
+const orderMiddlewares = [partnerAuthMW(), partnerOrderValidationMW(partnerOrderSchema)];
+
+ordersRouter.post('/', orderMiddlewares, async (req, res) => {
 	// validate auth token from partner API
 	// save it to DB with/without correct flag
+	console.log('res.locals.validated', res.locals.validated);
+	const validated = res.locals.validated;
 	const convertedbody = convertBodyByTemplate(req.body, partnerToTigerConversionTemplate);
 	const body = {
 		...convertedbody,
 		"InvoiceSendLater": false,
 		"Issued": getDateByISO8601(),
 		"OrderType": "standard",
+		State: OrderStates.NEW,
+		Validated: validated
 	};
 
-	const checkOrderStatus = async (orderId) => {
-		try {
-			const response = await axiosTiger.get(`/orders/${orderId}/state`);
-			const status = response.data['State'];
-			console.log('response', response.data);
-			if (status !== 'Finished') {
-				return setTimeout(() => checkOrderStatus(orderId), 5000);
-			} else {
-				console.log(`Finished!!!!`);
-				const body = { "state": status };
-				const response = await axiosPartner.patch(`/orders/${orderId}`, body);
-				console.log(`Finished, response`, response);
-			}
-		} catch (err) {
-			console.log('checkorderStatus Error', err);
-		}
-	}
-
-	try {
-		const orderId = body["OrderID"];
-		await axiosTiger.post('/orders', body);
-		checkOrderStatus(orderId);
-		console.log('Success in request Tiger');
-	} catch (err) {
-		console.log('Error in request Tiger', err);
-	}
-
-	res.status(200).json(body);
+	res.status(200).json({});
+	return validated ? createTigerOrder(body) : saveTigerOrder(body);
 });
 
 module.exports = ordersRouter;

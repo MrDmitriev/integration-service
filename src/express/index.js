@@ -1,5 +1,6 @@
 'use strict'
 const express = require('express');
+const mongoose = require('mongoose');
 const app = express();
 
 const ordersRouter = require('./routes/orders');
@@ -9,14 +10,22 @@ app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use('/api/orders', ordersRouter);
 
-app.get('/', (req, res) => {
-	res.end('<h1>Hello page</h1>');
-});
+app.get('/', (req, res) => res.end('<h1>Hello page</h1>'));
 
-app.get('/about', (req, res) => {
-	res.end('<h1>About page</h1>');
-});
+const start = async () => {
+	try {
+		await mongoose.connect('mongodb+srv://mrdmitriev:extreme3dproA@cluster0.v8gxo.azure.mongodb.net/app?retryWrites=true&w=majority', {
+			useNewUrlParser: true,
+			useUnifiedTopology: true,
+			useCreateIndex: true
+		});
 
-app.listen(PORT, () => {
-	console.log(`Server started successfully`);
-})
+		app.listen(PORT, () => {
+			console.log(`Server started successfully`);
+		})
+	} catch (err) {
+		console.log('Starting server failed', err.message);
+	}
+};
+
+start();
