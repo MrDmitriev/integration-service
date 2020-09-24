@@ -4,10 +4,12 @@ const { convertBodyByTemplate, getDateByISO8601 } = require('../../utils/convers
 const { partnerToTigerConversionTemplate } = require('../../conversionMaps/conversionToTigerTemplate');
 const axiosTiger = require('../../service/api/axiosTiger');
 const axiosPartner = require('../../service/api/axiosPartner');
+const partnerOrderSchema = require('../../schemas/partnerOrderSchema');
+const partnerOrderValidationMW = require('../../middleware/validation/partnerOrderValidationMW');
 
 const ordersRouter = new Router();
 
-ordersRouter.post('/', async (req, res) => {
+ordersRouter.post('/', partnerOrderValidationMW(partnerOrderSchema), async (req, res) => {
 	// validate body
 	// validate auth token from partner API
 	// save it to DB with/without correct flag
@@ -19,13 +21,13 @@ ordersRouter.post('/', async (req, res) => {
 		"OrderType": "standard",
 	};
 
-	const checkOrder = async (orderId) => {
+	const checkOrderStatus = async (orderId) => {
 		try {
 			const response = await axiosTiger.get(`/orders/${orderId}/state`);
 			const status = response.data['State'];
 			console.log('response', response.data);
 			if (status !== 'Finished') {
-				return setTimeout(() => checkOrder(orderId), 5000);
+				return setTimeout(() => checkOrderStatus(orderId), 5000);
 			} else {
 				console.log(`Finished!!!!`);
 				const body = { "state": status };
@@ -33,14 +35,14 @@ ordersRouter.post('/', async (req, res) => {
 				console.log(`Finished, response`, response);
 			}
 		} catch (err) {
-			console.log('checkorder Error', err);
+			console.log('checkorderStatus Error', err);
 		}
 	}
 
 	try {
 		const orderId = body["OrderID"];
 		await axiosTiger.post('/orders', body);
-		checkOrder(orderId);
+		checkOrderStatus(orderId);
 		console.log('Success in request Tiger');
 	} catch (err) {
 		console.log('Error in request Tiger', err);
