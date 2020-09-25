@@ -24,6 +24,8 @@ const checkOrderStatus = async (orderId, outbound) => {
 			console.log(`Finished!!!!`);
 			const body = { "state": status };
 			const headers = {"x-api-key": outbound};
+			const findAndUPd = await Order.findOneAndUpdate({"OrderID": orderId}, {"State": OrderStates.FINISHED});
+			console.log('findAndUPd', findAndUPd);
 			const response = await axiosPartner.patch(`/orders/${orderId}`, body, {headers});
 			console.log(`Finished, response`, response.status);
 		}
@@ -64,7 +66,7 @@ const createTigerOrder = async (body, outbound) => {
 	}
 }
 
-const orderMiddlewares = [partnerAuthMW(), checkIsOrderExistMW(), partnerOrderValidationMW(partnerOrderSchema)];
+const orderMiddlewares = [partnerAuthMW(),  partnerOrderValidationMW(partnerOrderSchema)];
 
 ordersRouter.post('/', orderMiddlewares, async (req, res) => {
 	console.log('res.locals.validated', res.locals.validated);

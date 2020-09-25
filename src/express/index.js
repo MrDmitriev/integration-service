@@ -18,7 +18,8 @@ const start = async () => {
 		await mongoose.connect('mongodb+srv://mrdmitriev:extreme3dproA@cluster0.v8gxo.azure.mongodb.net/app?retryWrites=true&w=majority', {
 			useNewUrlParser: true,
 			useUnifiedTopology: true,
-			useCreateIndex: true
+			useCreateIndex: true,
+			useFindAndModify: false
 		});
 
 		app.listen(PORT, () => {
