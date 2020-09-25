@@ -10,26 +10,29 @@ const partnerAuthMW = require('../../middleware/auth/partnerAuthMW');
 const checkIsOrderExistMW = require('../../middleware/order/checkOrderExistMW');
 const Order = require('../../schemas/mongodb/Order');
 const {OrderStates} = require('../../constants/constants');
+const {getLogger} = require('../../utils/logger');
 
 const ordersRouter = new Router();
+const logger = getLogger();
 
 const checkOrderStatus = async (orderId, outbound) => {
 	try {
 		const response = await axiosTiger.get(`/orders/${orderId}/state`);
 		const status = response.data['State'];
-		console.log('response', response.data);
-		if (status !== 'Finished') {
+		logger.info(`Success: get order state from Tiger API. Status: ${status}`);
+		if (status !== OrderStates.FINISHED) {
 			return setTimeout(() => checkOrderStatus(orderId), 5000);
 		} else {
-			console.log(`Finished!!!!`);
+			logger.info(`Success: Order ${orderId} status is Finished`);
 			const body = { "state": status };
 			const headers = {"x-api-key": outbound};
 			await Order.findOneAndUpdate({"OrderID": orderId}, {"State": OrderStates.FINISHED});
-			const response = await axiosPartner.patch(`/orders/${orderId}`, body, {headers});
-			console.log(`Finished, response`, response.status);
+			logger.info(`Success: update order ${orderId} in data base`);
+			await axiosPartner.patch(`/orders/${orderId}`, body, {headers});
+			logger.info(`Success: patched order ${orderId} state to Partner`);
 		}
 	} catch (err) {
-		console.log('checkorderStatus Error', err);
+		logger.error(`Failed: check order ${orderId} status. ${err.message}`);
 	}
 }
 // validate partners credentials
@@ -51,7 +54,7 @@ const checkOrderStatus = async (orderId, outbound) => {
 const saveTigerOrder = async (body) => {
 	const order = new Order(body);
 	await order.save();
-	console.log('order saved');
+	logger.info(`Success: save new order ${body["OrderID"]} to data base`);
 }
 
 const createTigerOrder = async (body, outbound) => {
@@ -59,9 +62,10 @@ const createTigerOrder = async (body, outbound) => {
 	try {
 		await saveTigerOrder(body);
 		await axiosTiger.post('/orders', body);
+		logger.info(`Success: sent new order ${body["OrderID"]} to Tiger API`);
 		checkOrderStatus(orderId, outbound);
 	} catch (err) {
-		console.log('something went wrong', err.message);
+		logger.error(`Failed: sending new order ${body["OrderID"]} to Tiger API. ${err.message}`);
 	}
 }
 
@@ -72,7 +76,6 @@ const orderMiddlewares = [
 ];
 
 ordersRouter.post('/', orderMiddlewares, async (req, res) => {
-	console.log('res.locals.validated', res.locals.validated);
 	const validated = res.locals.validated;
 	const {outbound} = res.locals.credentials;
 	const convertedbody = convertBodyByTemplate(req.body, partnerToTigerConversionTemplate);

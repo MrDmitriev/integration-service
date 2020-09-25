@@ -1,11 +1,12 @@
 'use strict'
 const express = require('express');
 const mongoose = require('mongoose');
-
+const {getLogger} = require('../utils/logger');
 const ordersRouter = require('./routes/orders');
+
 const PORT = process.env.PORT || 8080;
 const app = express();
-
+const logger = getLogger();
 
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
@@ -23,10 +24,10 @@ const start = async () => {
 		});
 
 		app.listen(PORT, () => {
-			console.log(`Server started successfully`);
+			logger.info(`Server started successfully on: PORT:${PORT}`);
 		})
 	} catch (err) {
-		console.log('Starting server failed', err.message);
+		logger.error('Starting server failed', err);
 	}
 };
 
