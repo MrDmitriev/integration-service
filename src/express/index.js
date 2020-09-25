@@ -1,16 +1,18 @@
 'use strict'
 const express = require('express');
 const mongoose = require('mongoose');
-const app = express();
 
 const ordersRouter = require('./routes/orders');
+require(`dotenv`).config();
 const PORT = process.env.PORT || 8080;
+const app = express();
+
 
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use('/api/orders', ordersRouter);
 
-app.get('/', (req, res) => res.end('<h1>Hello page</h1>'));
+app.get('/', (req, res) => res.end(`<h1>Hello page. PORT: ${PORT}</h1>`));
 
 const start = async () => {
 	try {
