@@ -17,7 +17,7 @@ module.exports = () => (
 			console.log('credentials', credentials);
 			if (credentials) {
 				logger.info('Success: authentication');
-				return res.locals.credentials = credentials;
+				res.locals.credentials = credentials;
 			} else {
 				logger.warn('Failed: authentication. Wrong credentials');
 				return res.status(403).json({message: 'Wrong inbound credential'});
