@@ -1,23 +1,20 @@
-'use strict';
 const axios = require('axios');
 
 const axiosTiger = axios.create({
 	baseURL: 'https://us-central1-node-task-assignment.cloudfunctions.net/oapi/api',
 	timeout: 5000,
 	headers: {
-		Authorization: `Base ${process.env.tigerAuth}`,
-		"Content-type": "application/json"
+		Authorization: 'Base VGVzdFVzZXI6MkFzZjI3ZERWY3ZkOHNkMWRmU2Zk'
 	}
 });
 
-console.log(`Base ${process.env.tigerAuth}`)
 const onSuccess = (response) => {
 	console.log('Tigers API request was successfull');
 	return response;
 };
 
 const onError = (err) => {
-	console.error(`An error occured, while using Tigers API: `);
+	console.error(`An error occured, while using Tigers API: `, err.message);
 	return false;
 }
 

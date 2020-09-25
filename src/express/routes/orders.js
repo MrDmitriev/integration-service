@@ -7,6 +7,7 @@ const axiosPartner = require('../../service/api/axiosPartner');
 const partnerOrderSchema = require('../../schemas/joi/partnerOrderSchema');
 const partnerOrderValidationMW = require('../../middleware/validation/partnerOrderValidationMW');
 const partnerAuthMW = require('../../middleware/auth/partnerAuthMW');
+const checkIsOrderExistMW = require('../../middleware/order/checkOrderExistMW');
 const Order = require('../../schemas/mongodb/Order');
 const {OrderStates} = require('../../constants/constants');
 
@@ -15,15 +16,15 @@ const ordersRouter = new Router();
 const checkOrderStatus = async (orderId, outbound) => {
 	try {
 		const response = await axiosTiger.get(`/orders/${orderId}/state`);
-		console.log('response', response, response.status);
-
 		const status = response.data['State'];
+		console.log('response', response.data);
 		if (status !== 'Finished') {
 			return setTimeout(() => checkOrderStatus(orderId), 5000);
 		} else {
 			console.log(`Finished!!!!`);
 			const body = { "state": status };
 			const headers = {"x-api-key": outbound};
+			await Order.findOneAndUpdate({"OrderID": orderId}, {"State": OrderStates.FINISHED});
 			const response = await axiosPartner.patch(`/orders/${orderId}`, body, {headers});
 			console.log(`Finished, response`, response.status);
 		}
@@ -64,7 +65,11 @@ const createTigerOrder = async (body, outbound) => {
 	}
 }
 
-const orderMiddlewares = [partnerAuthMW(), partnerOrderValidationMW(partnerOrderSchema)];
+const orderMiddlewares = [
+	partnerAuthMW(),
+	checkIsOrderExistMW(),
+	partnerOrderValidationMW(partnerOrderSchema)
+];
 
 ordersRouter.post('/', orderMiddlewares, async (req, res) => {
 	console.log('res.locals.validated', res.locals.validated);
