@@ -11,7 +11,6 @@ const checkIsOrderExistMW = require('../../middleware/order/checkOrderExistMW');
 const Order = require('../../schemas/mongodb/Order');
 const {OrderStates, ORDER_STATUS_TIMEOUT, HTTP_CODES} = require('../../constants/constants');
 const {getLogger} = require('../../utils/logger');
-const 
 
 const ordersRouter = new Router();
 const logger = getLogger();
