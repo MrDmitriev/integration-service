@@ -14,10 +14,10 @@ module.exports = () => (
 		try {
 			const inbound = req.headers['x-api-key'];
 			const credentials = await PartnerCredential.findOne({inbound});
-
+			console.log('credentials', credentials);
 			if (credentials) {
-				res.locals.credentials = credentials;
 				logger.info('Success: authentication');
+				return res.locals.credentials = credentials;
 			} else {
 				logger.warn('Failed: authentication. Wrong credentials');
 				return res.status(403).json({message: 'Wrong inbound credential'});
