@@ -65,7 +65,11 @@ const createTigerOrder = async (body, outbound) => {
 	}
 }
 
-const orderMiddlewares = [partnerAuthMW(), checkIsOrderExistMW(), partnerOrderValidationMW(partnerOrderSchema)];
+const orderMiddlewares = [
+	partnerAuthMW(),
+	checkIsOrderExistMW(),
+	partnerOrderValidationMW(partnerOrderSchema)
+];
 
 ordersRouter.post('/', orderMiddlewares, async (req, res) => {
 	console.log('res.locals.validated', res.locals.validated);
