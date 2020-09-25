@@ -9,7 +9,7 @@ const logger = getLogger();
 module.exports = () => (
 	async (req, res, next) => {
 		if (!req.headers['x-api-key']) {
-			return res.status(HTTP_CODES.UNAUTHORIZED).json({message: 'missing x-api-key in headers'})
+			return res.status(HTTP_CODES.UNAUTHORIZED).json({message: 'missing x-api-key in headers'});
 		}
 
 		try {
