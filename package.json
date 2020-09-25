@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node -r dotenv/config ./src/express/index.js",
+    "start": "node ./src/express/index.js",
     "dev": "nodemon ./src/express/index.js"
   },
   "repository": {

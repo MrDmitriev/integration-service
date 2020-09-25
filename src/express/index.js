@@ -1,18 +1,16 @@
 'use strict'
 const express = require('express');
 const mongoose = require('mongoose');
-const config = require('config');
 
 const ordersRouter = require('./routes/orders');
 const PORT = process.env.PORT || 8080;
 const app = express();
 
-
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 app.use('/api/orders', ordersRouter);
 
-app.get('/', (req, res) => res.end(`<h1>Hello page. PORT: ${config.get("credentials")}</h1>`));
+app.get('/', (req, res) => res.end(`<h1>Hello page. PORT: ${process.env.tigerAuth}</h1>`));
 
 const start = async () => {
 	try {
