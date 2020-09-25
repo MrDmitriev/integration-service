@@ -5,4 +5,4 @@ const schema = new Schema({
 	outbound: {required: true, type: String},
 });
 
-module.exports = model('PartnerCredential', schema);
+module.exports = model('partner_credentials', schema);

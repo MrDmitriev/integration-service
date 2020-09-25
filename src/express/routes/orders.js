@@ -12,7 +12,7 @@ const {OrderStates} = require('../../constants/constants');
 
 const ordersRouter = new Router();
 
-const checkOrderStatus = async (orderId) => {
+const checkOrderStatus = async (orderId, outbound) => {
 	try {
 		const response = await axiosTiger.get(`/orders/${orderId}/state`);
 		const status = response.data['State'];
@@ -22,7 +22,8 @@ const checkOrderStatus = async (orderId) => {
 		} else {
 			console.log(`Finished!!!!`);
 			const body = { "state": status };
-			const response = await axiosPartner.patch(`/orders/${orderId}`, body);
+			const headers = {"x-api-key": outbound};
+			const response = await axiosPartner.patch(`/orders/${orderId}`, body, {headers});
 			console.log(`Finished, response`, response.status);
 		}
 	} catch (err) {
@@ -51,12 +52,12 @@ const saveTigerOrder = async (body) => {
 	console.log('order saved');
 }
 
-const createTigerOrder = async (body) => {
+const createTigerOrder = async (body, outbound) => {
 	const orderId = body["OrderID"];
 	try {
 		await saveTigerOrder(body);
 		await axiosTiger.post('/orders', body);
-		checkOrderStatus(orderId);
+		checkOrderStatus(orderId, outbound);
 	} catch (err) {
 		console.log('something went wrong', err.message);
 	}
@@ -65,10 +66,9 @@ const createTigerOrder = async (body) => {
 const orderMiddlewares = [partnerAuthMW(), partnerOrderValidationMW(partnerOrderSchema)];
 
 ordersRouter.post('/', orderMiddlewares, async (req, res) => {
-	// validate auth token from partner API
-	// save it to DB with/without correct flag
 	console.log('res.locals.validated', res.locals.validated);
 	const validated = res.locals.validated;
+	const {outbound} = res.locals.credentials;
 	const convertedbody = convertBodyByTemplate(req.body, partnerToTigerConversionTemplate);
 	const body = {
 		...convertedbody,
@@ -80,7 +80,7 @@ ordersRouter.post('/', orderMiddlewares, async (req, res) => {
 	};
 
 	res.status(200).json({});
-	return validated ? createTigerOrder(body) : saveTigerOrder(body);
+	return validated ? createTigerOrder(body, outbound) : saveTigerOrder(body);
 });
 
 module.exports = ordersRouter;
