@@ -1,7 +1,7 @@
 'use strict';
 const Joi = require(`@hapi/joi`);
 
-const {CarrierCodes} = require('../constants/constants');
+const {CarrierCodes} = require('../../constants/constants');
 
 const validCarrierKeys = Object.keys(CarrierCodes);
 const product = Joi.object({
