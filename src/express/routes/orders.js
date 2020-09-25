@@ -28,8 +28,8 @@ const checkOrderStatus = async (orderId, outbound) => {
 			const headers = {"x-api-key": outbound};
 			await Order.findOneAndUpdate({"OrderID": orderId}, {"State": OrderStates.FINISHED});
 			logger.info(`Success: update order ${orderId} in data base`);
-			await axiosPartner.patch(`/orders/${orderId}`, body, {headers});
-			logger.info(`Success: patched order ${orderId} state to Partner`);
+			const response = await axiosPartner.patch(`/orders/${orderId}`, body, {headers});
+			logger.info(`Success: patched order ${orderId} state to Partner, ${response}`);
 		}
 	} catch (err) {
 		logger.error(`Failed: check order ${orderId} status. ${err.message}`);
