@@ -15,8 +15,9 @@ const ordersRouter = new Router();
 const checkOrderStatus = async (orderId, outbound) => {
 	try {
 		const response = await axiosTiger.get(`/orders/${orderId}/state`);
-		const status = response.data['State'];
 		console.log('response', response.data);
+
+		const status = response.data['State'];
 		if (status !== 'Finished') {
 			return setTimeout(() => checkOrderStatus(orderId), 5000);
 		} else {
