@@ -21,15 +21,15 @@ const checkOrderStatus = async (orderId, outbound) => {
 		const status = response.data['State'];
 		logger.info(`Success: get order state from Tiger API. Status: ${status}`);
 		if (status !== OrderStates.FINISHED) {
-			return setTimeout(() => checkOrderStatus(orderId), 5000);
+			return setTimeout(() => checkOrderStatus(orderId, outbound), 5000);
 		} else {
 			logger.info(`Success: Order ${orderId} status is Finished`);
 			const body = { "state": status };
-			const headers = {"x-api-key": "KdofdDxc2Asf27dDVcvd8sd1dfSfdv1"};
+			const headers = {"x-api-key": outbound};
 			await Order.findOneAndUpdate({"OrderID": orderId}, {"State": OrderStates.FINISHED});
 			logger.info(`Success: update order ${orderId} in data base`);
 			const response = await axiosPartner.patch(`/orders/${orderId}`, body, {headers});
-			logger.info(`Success: patched order ${orderId} state to Partner, ${response}`);
+			logger.info(`Success: patched order ${orderId} state to Partner, ${response.status}`);
 		}
 	} catch (err) {
 		logger.error(`Failed: check order ${orderId} status. ${err.message}`);

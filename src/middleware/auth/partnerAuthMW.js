@@ -14,7 +14,6 @@ module.exports = () => (
 		try {
 			const inbound = req.headers['x-api-key'];
 			const credentials = await PartnerCredential.findOne({inbound});
-			console.log('credentials', credentials);
 			if (credentials) {
 				logger.info('Success: authentication');
 				res.locals.credentials = credentials;
