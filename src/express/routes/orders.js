@@ -12,6 +12,7 @@ const Order = require('../../schemas/mongodb/Order');
 const {OrderStates} = require('../../constants/constants');
 const {getLogger} = require('../../utils/logger');
 
+
 const ordersRouter = new Router();
 const logger = getLogger();
 
@@ -35,21 +36,6 @@ const checkOrderStatus = async (orderId, outbound) => {
 		logger.error(`Failed: check order ${orderId} status. ${err.message}`);
 	}
 }
-// validate partners credentials
-// if validation true => next to body validation
-// if validation false => 403 forbidden
-
-// validate partnersOrder body
-// convert partners body to tigers body
-// if validation true => create new tigers order
-// if validation false => save order to data base
-// res send status ok + empty body
-
-// --- create new tiger order
-// save body to DB
-// post new order
-// start checking status
-// when status finished => patch partner status
 
 const saveTigerOrder = async (body) => {
 	const order = new Order(body);
