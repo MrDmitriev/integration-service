@@ -1,11 +1,13 @@
 'use strict';
 const axios = require('axios');
 
+const {AXIOS_REQUEST_TIMEOUT} = require('../../constants/constants');
+
 const {getLogger} = require('../../utils/logger');
 const logger = getLogger();
 const axiosPartner = axios.create({
 	baseURL: 'https://us-central1-node-task-assignment.cloudfunctions.net/papi/api',
-	timeout: 5000,
+	timeout: AXIOS_REQUEST_TIMEOUT,
 });
 
 const onSuccess = (response) => {

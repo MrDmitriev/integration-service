@@ -1,5 +1,6 @@
 'use strict';
 const {getLogger} = require('../../utils/logger');
+const {HTTP_CODES} = require('../../constants/constants');
 
 const PartnerCredential = require('../../schemas/mongodb/partnerCredential');
 
@@ -8,7 +9,7 @@ const logger = getLogger();
 module.exports = () => (
 	async (req, res, next) => {
 		if (!req.headers['x-api-key']) {
-			return res.status(401).json({message: 'missing x-api-key in headers'})
+			return res.status(HTTP_CODES.UNAUTHORIZED).json({message: 'missing x-api-key in headers'});
 		}
 
 		try {
@@ -19,7 +20,7 @@ module.exports = () => (
 				res.locals.credentials = credentials;
 			} else {
 				logger.warn('Failed: authentication. Wrong credentials');
-				return res.status(403).json({message: 'Wrong inbound credential'});
+				return res.status(HTTP_CODES.FORBIDDEN).json({message: 'Wrong inbound credential'});
 			}
 		} catch (err) {
 			logger.warn(`Failed: authentication ${err.message}`);
