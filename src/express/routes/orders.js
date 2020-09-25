@@ -9,9 +9,9 @@ const partnerOrderValidationMW = require('../../middleware/validation/partnerOrd
 const partnerAuthMW = require('../../middleware/auth/partnerAuthMW');
 const checkIsOrderExistMW = require('../../middleware/order/checkOrderExistMW');
 const Order = require('../../schemas/mongodb/Order');
-const {OrderStates} = require('../../constants/constants');
+const {OrderStates, ORDER_STATUS_TIMEOUT, HTTP_CODES} = require('../../constants/constants');
 const {getLogger} = require('../../utils/logger');
-
+const 
 
 const ordersRouter = new Router();
 const logger = getLogger();
@@ -22,7 +22,7 @@ const checkOrderStatus = async (orderId, outbound) => {
 		const status = response.data['State'];
 		logger.info(`Success: get order state from Tiger API. Status: ${status}`);
 		if (status !== OrderStates.FINISHED) {
-			return setTimeout(() => checkOrderStatus(orderId, outbound), 5000);
+			return setTimeout(() => checkOrderStatus(orderId, outbound), ORDER_STATUS_TIMEOUT);
 		} else {
 			logger.info(`Success: Order ${orderId} status is Finished`);
 			const body = { "state": status };
@@ -74,7 +74,7 @@ ordersRouter.post('/', orderMiddlewares, async (req, res) => {
 		Validated: validated
 	};
 
-	res.status(200).json({});
+	res.status(HTTP_CODES.OK).json({});
 	return validated ? createTigerOrder(body, outbound) : saveTigerOrder(body);
 });
 
