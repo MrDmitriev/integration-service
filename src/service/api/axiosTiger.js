@@ -14,7 +14,7 @@ const onSuccess = (response) => {
 };
 
 const onError = (err) => {
-	console.error(`An error occured, while using Tigers API: `);
+	console.error(`An error occured, while using Tigers API: `, err.message);
 	return false;
 }
 

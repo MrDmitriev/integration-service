@@ -7,6 +7,7 @@ const axiosPartner = require('../../service/api/axiosPartner');
 const partnerOrderSchema = require('../../schemas/joi/partnerOrderSchema');
 const partnerOrderValidationMW = require('../../middleware/validation/partnerOrderValidationMW');
 const partnerAuthMW = require('../../middleware/auth/partnerAuthMW');
+const checkIsOrderExistMW = require('../../middleware/order/checkOrderExistMW');
 const Order = require('../../schemas/mongodb/Order');
 const {OrderStates} = require('../../constants/constants');
 
@@ -63,7 +64,7 @@ const createTigerOrder = async (body, outbound) => {
 	}
 }
 
-const orderMiddlewares = [partnerAuthMW(), partnerOrderValidationMW(partnerOrderSchema)];
+const orderMiddlewares = [partnerAuthMW(), checkIsOrderExistMW(), partnerOrderValidationMW(partnerOrderSchema)];
 
 ordersRouter.post('/', orderMiddlewares, async (req, res) => {
 	console.log('res.locals.validated', res.locals.validated);
