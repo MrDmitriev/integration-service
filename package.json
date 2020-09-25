@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./src/express/index.js",
-    "dev": "nodemon ./src/express/index.js"
+    "dev": "nodemon ./src/express/index.js | pino-pretty"
   },
   "repository": {
     "type": "git",

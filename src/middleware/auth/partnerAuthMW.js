@@ -1,5 +1,9 @@
 'use strict';
+const {getLogger} = require('../../utils/logger');
+
 const PartnerCredential = require('../../schemas/mongodb/partnerCredential');
+
+const logger = getLogger();
 
 module.exports = () => (
 	async (req, res, next) => {
@@ -13,14 +17,13 @@ module.exports = () => (
 
 			if (credentials) {
 				res.locals.credentials = credentials;
-				console.log('Auth succeeded');
+				logger.info('Success: authentication');
 			} else {
-				console.log('Auth failed');
+				logger.warn('Failed: authentication. Wrong credentials');
 				return res.status(403).json({message: 'Wrong inbound credential'});
 			}
-			
 		} catch (err) {
-			console.log('Auth failed', err.message);
+			logger.warn(`Failed: authentication ${err.message}`);
 		}
 
 		next();
