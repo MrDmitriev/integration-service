@@ -1,9 +1,10 @@
 'use strict';
 const axios = require('axios');
+require(`dotenv`).config();
 
-const {AXIOS_REQUEST_TIMEOUT} = require('../../constants/constants');
+const {AXIOS_REQUEST_TIMEOUT} = require('../../../constants/constants');
 
-const {getLogger} = require('../../utils/logger');
+const {getLogger} = require('../../../utils/logger');
 const logger = getLogger();
 const axiosTiger = axios.create({
 	baseURL: 'https://us-central1-node-task-assignment.cloudfunctions.net/oapi/api',

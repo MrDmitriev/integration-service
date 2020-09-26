@@ -1,9 +1,9 @@
 'use strict';
 const axios = require('axios');
 
-const {AXIOS_REQUEST_TIMEOUT} = require('../../constants/constants');
+const {AXIOS_REQUEST_TIMEOUT} = require('../../../constants/constants');
 
-const {getLogger} = require('../../utils/logger');
+const {getLogger} = require('../../../utils/logger');
 const logger = getLogger();
 const axiosPartner = axios.create({
 	baseURL: 'https://us-central1-node-task-assignment.cloudfunctions.net/papi/api',

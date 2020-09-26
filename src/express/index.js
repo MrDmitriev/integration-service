@@ -3,8 +3,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const {getLogger} = require('../utils/logger');
 const ordersRouter = require('./routes/orders');
+const {DEFAULT_PORT} = require('../constants/constants');
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || DEFAULT_PORT;
 const app = express();
 const logger = getLogger();
 
