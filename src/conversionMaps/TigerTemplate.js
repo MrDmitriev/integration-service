@@ -1,10 +1,8 @@
 // "tigerKey": "partnerKey" 
-const {getDateByISO8601} = require('../utils/conversions');
 const {OrderStates} = require('../constants/constants');
 
-
 const tigerTemplate = {
-	template: {
+	baseBody: {
 		"OrderID": {name: "id", type: 'String'},
 		"InvoiceSendLater": {name: '', type: 'String'},
 		"Issued": {name: '', type: 'String'},
@@ -33,10 +31,11 @@ const tigerTemplate = {
 		]
 	},
 	completeBody: (body, validated) => {
+		const date = new Date();
 		const newBody = {
 			...body,
 			"InvoiceSendLater": false,
-			"Issued": new Date(),
+			"Issued": date.toISOString(),
 			"OrderType": "standard",
 			State: OrderStates.NEW,
 			Validated: validated

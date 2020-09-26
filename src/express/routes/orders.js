@@ -1,38 +1,27 @@
 'use strict';
 const { Router } = require('express');
-const { convertBodyByTemplate, getDateByISO8601 } = require('../../utils/conversions');
-const tigerTemplate = require('../../conversionMaps/TigerTemplate');
 const partnerOrderSchema = require('../../schemas/joi/partnerOrderSchema');
 const partnerOrderValidationMW = require('../../middleware/validation/partnerOrderValidationMW');
 const partnerAuthMW = require('../../middleware/auth/partnerAuthMW');
 const checkIsOrderExistMW = require('../../middleware/order/checkOrderExistMW');
-const {OrderStates, HTTP_CODES} = require('../../constants/constants');
-const {createTigerOrder, saveTigerOrder} = require('../services/orderService/orderService');
+const convertBodyMW = require('../../middleware/conversion/bodyConversionMW');
+const {HTTP_CODES} = require('../../constants/constants');
+const {createTigerOrder, saveTigerOrderToDB} = require('../services/orderService/orderService');
 const ordersRouter = new Router();
 
 const orderMiddlewares = [
 	partnerAuthMW(),
 	checkIsOrderExistMW(),
 	partnerOrderValidationMW(partnerOrderSchema),
-	// convertBody
+	convertBodyMW()
 ];
 
-//convertBody:
-// getTemplate
-// convertByTemplate
-// completeBody
-// returnBody
-
 ordersRouter.post('/', orderMiddlewares, async (req, res) => {
-	const validated = res.locals.validated;
-	const {outbound} = res.locals.credentials;
-	const template = tigerTemplate;
-	const convertedbody = convertBodyByTemplate(req.body, template);
-	const body = template.completeBody(convertedbody, validated);
-	console.log('convertedbody', body);
+	const {validated, credentials, convertedbody} = res.locals;
+	const {outbound} = credentials;
 
 	res.status(HTTP_CODES.OK).json({});
-	return validated ? createTigerOrder(body, outbound) : saveTigerOrder(body);
+	return validated ? createTigerOrder(convertedbody, outbound) : saveTigerOrderToDB(convertedbody);
 });
 
 module.exports = ordersRouter;

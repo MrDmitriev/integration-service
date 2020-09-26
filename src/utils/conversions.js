@@ -46,7 +46,7 @@ const curriedUpdateObjValues = curry(updateObjValues);
 
 const convertBodyByTemplate = (body, template) => {
 	const replaceBodyValues = curriedUpdateObjValues(body);
-	const newBody = map(replaceBodyValues, template.template);
+	const newBody = map(replaceBodyValues, template.baseBody);
 	return newBody;
 }
 
@@ -56,12 +56,12 @@ const getDateByISO8601 = () => {
 	return dateISO8601;
 }
 
-const getTemplate = (partnersName) => {
+const getConversionTemplate = (partnersName) => {
 	return conversionMaps[partnersName] || null;
 }
 
 module.exports = {
 	convertBodyByTemplate,
 	getDateByISO8601,
-	getTemplate
+	getConversionTemplate
 }

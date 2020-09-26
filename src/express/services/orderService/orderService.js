@@ -29,7 +29,7 @@ const checkOrderStatus = async (orderId, outbound) => {
 	}
 }
 
-const saveTigerOrder = async (body) => {
+const saveTigerOrderToDB = async (body) => {
 	const order = new Order(body);
 	await order.save();
 	logger.info(`Success: save new order ${body["OrderID"]} to data base`);
@@ -38,7 +38,7 @@ const saveTigerOrder = async (body) => {
 const createTigerOrder = async (body, outbound) => {
 	const orderId = body["OrderID"];
 	try {
-		await saveTigerOrder(body);
+		await saveTigerOrderToDB(body);
 		await axiosTiger.post('/orders', body);
 		logger.info(`Success: sent new order ${body["OrderID"]} to Tiger API`);
 		checkOrderStatus(orderId, outbound);
@@ -49,6 +49,6 @@ const createTigerOrder = async (body, outbound) => {
 
 module.exports = {
 	createTigerOrder,
-	saveTigerOrder,
+	saveTigerOrderToDB,
 	checkOrderStatus
 }

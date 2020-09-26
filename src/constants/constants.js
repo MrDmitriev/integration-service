@@ -6,6 +6,8 @@ const HTTP_CODES = {
 	NOT_FOUND: 404
 }
 
+const DEFAULT_PORT = 8080;
+
 const CarrierCodes = {
 	"DPD": 1001,
 	"DHL": 1002,
@@ -29,5 +31,6 @@ module.exports = {
 	OrderStates,
 	AXIOS_REQUEST_TIMEOUT,
 	ORDER_STATUS_TIMEOUT,
-	HTTP_CODES
+	HTTP_CODES,
+	DEFAULT_PORT
 }
