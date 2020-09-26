@@ -1,5 +1,6 @@
 const { map, curry, propOr } = require('ramda');
 const countryCodeLookup = require('iso-countries-lookup');
+const conversionMaps = require('../conversionMaps');
 
 const { CarrierCodes } = require('../constants/constants');
 
@@ -45,7 +46,7 @@ const curriedUpdateObjValues = curry(updateObjValues);
 
 const convertBodyByTemplate = (body, template) => {
 	const replaceBodyValues = curriedUpdateObjValues(body);
-	const newBody = map(replaceBodyValues, template);
+	const newBody = map(replaceBodyValues, template.getTemplate());
 	return newBody;
 }
 
@@ -55,7 +56,12 @@ const getDateByISO8601 = () => {
 	return dateISO8601;
 }
 
+const getTemplate = (partnersName) => {
+	return conversionMaps[partnersName] || null;
+}
+
 module.exports = {
 	convertBodyByTemplate,
-	getDateByISO8601
+	getDateByISO8601,
+	getTemplate
 }
