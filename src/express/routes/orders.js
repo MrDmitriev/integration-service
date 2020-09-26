@@ -1,7 +1,7 @@
 'use strict';
 const { Router } = require('express');
 const { convertBodyByTemplate, getDateByISO8601 } = require('../../utils/conversions');
-const TigerTemplate = require('../../conversionMaps/TigerTemplate');
+const tigerTemplate = require('../../conversionMaps/TigerTemplate');
 const partnerOrderSchema = require('../../schemas/joi/partnerOrderSchema');
 const partnerOrderValidationMW = require('../../middleware/validation/partnerOrderValidationMW');
 const partnerAuthMW = require('../../middleware/auth/partnerAuthMW');
@@ -26,9 +26,9 @@ const orderMiddlewares = [
 ordersRouter.post('/', orderMiddlewares, async (req, res) => {
 	const validated = res.locals.validated;
 	const {outbound} = res.locals.credentials;
-	const template = new TigerTemplate(validated);
+	const template = tigerTemplate;
 	const convertedbody = convertBodyByTemplate(req.body, template);
-	const body = template.completeBody(convertedbody);
+	const body = template.completeBody(convertedbody, validated);
 	console.log('convertedbody', body);
 
 	res.status(HTTP_CODES.OK).json({});

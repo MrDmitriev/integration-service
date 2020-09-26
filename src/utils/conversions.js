@@ -46,7 +46,7 @@ const curriedUpdateObjValues = curry(updateObjValues);
 
 const convertBodyByTemplate = (body, template) => {
 	const replaceBodyValues = curriedUpdateObjValues(body);
-	const newBody = map(replaceBodyValues, template.getTemplate());
+	const newBody = map(replaceBodyValues, template.template);
 	return newBody;
 }
 

@@ -1,7 +1,7 @@
-const TigerTemplate = require('./TigerTemplate');
+const tigerTemplate = require('./TigerTemplate');
 
 const partnersTemplates = {
-	partnerXy: TigerTemplate
+	partnerXy: tigerTemplate
 }
 
 module.exports = partnersTemplates;
